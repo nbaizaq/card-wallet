@@ -12,6 +12,7 @@ import { EyeIcon } from "lucide-react"
 import { FormEvent, useState } from "react"
 import { MASTER_KEY } from "@/lib/encrypt"
 import { z } from "zod"
+import { cloudStorage } from '@telegram-apps/sdk-react';
 
 const MasterKeySchema = z.object({
   masterKey: z.string()
@@ -42,12 +43,21 @@ export default function MasterKey({ onSave, onCancel }: { onSave: (masterKey: st
     return true;
   }
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function saveMasterKey(masterKey: string) {
+    if (cloudStorage.isSupported()) {
+      await cloudStorage.setItem(MASTER_KEY, masterKey)
+    }
+    else {
+      window.localStorage.setItem(MASTER_KEY, masterKey)
+    }
+  }
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!validate()) return;
 
-    sessionStorage.setItem(MASTER_KEY, masterKey);
+    await saveMasterKey(masterKey);
     if (typeof onSave === 'function') {
       onSave(masterKey);
     }
@@ -59,8 +69,8 @@ export default function MasterKey({ onSave, onCancel }: { onSave: (masterKey: st
       <Dialog open={open} onOpenChange={onCancel}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>You need to provide a master key</DialogTitle>
-            <form className="space-y-4" onSubmit={onSubmit}>
+            <DialogTitle>Provide a master key</DialogTitle>
+            <form className="space-y-4 mt-4" onSubmit={onSubmit}>
               <div className="flex gap-2">
                 <Input
                   placeholder="Master key"

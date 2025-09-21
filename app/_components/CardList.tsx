@@ -12,6 +12,7 @@ import CardBlock from "./CardBlock"
 import ConfirmationDialog from "./ConfirmationDialog"
 import DeleteConfirmation from "./DeleteConfirmation"
 import { LoaderIcon } from "lucide-react"
+import { cloudStorage } from '@telegram-apps/sdk-react';
 
 export default function CardList(
   { salt, iv }:
@@ -27,13 +28,31 @@ export default function CardList(
   })
   const [decryptedCards, setDecryptedCards] = useState<Card[]>([])
 
-  function initMasterKey() {
-    const _masterKey = window.sessionStorage.getItem(MASTER_KEY);
-    if (!_masterKey) {
-      setShowMasterKeyComponent(true)
+  async function getMasterKey() {
+    if (cloudStorage.isSupported()) {
+      return await cloudStorage.getItem(MASTER_KEY)
     }
     else {
-      setMasterKey(_masterKey)
+      return window.localStorage.getItem(MASTER_KEY)
+    }
+  }
+
+  async function initMasterKey() {
+    try {
+      const _masterKey = await getMasterKey();
+      if (!_masterKey) {
+        setShowMasterKeyComponent(true)
+      }
+      else {
+        setMasterKey(_masterKey)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Something went wrong while getting master key. " + error.message + ". Please try again.")
+      }
+      else {
+        toast.error("Something went wrong while getting master key. Please try again.")
+      }
     }
   }
 
@@ -190,11 +209,22 @@ export default function CardList(
             </div>
             {fetchingCards && <div className="flex justify-center items-center mt-4"><LoaderIcon className="animate-spin" /></div>}
           </div>
-        ) : <div className="mt-4 space-y-4">
-          {decryptedCards.map((card) => (
-            <CardBlock key={card.$id} card={card} onEdit={onEdit} onDelete={onDelete} />
-          ))}
-        </div>
+        ) : (
+          masterKey ? (<div className="mt-4 space-y-4">
+            {decryptedCards.map((card) => (
+              <CardBlock key={card.$id} card={card} onEdit={onEdit} onDelete={onDelete} />
+            ))}
+          </div>) : (
+            <div>
+              <div className="text-gray-500 text-center text-sm mt-4 text-pretty px-8">
+                To view your cards, you need to add a master key.
+              </div>
+              <div className="flex justify-center items-center mt-4">
+                <Button onClick={() => setShowMasterKeyComponent(true)}>Add a master key</Button>
+              </div>
+            </div>
+          )
+        )
       }
       {showMasterKeyComponent && <MasterKey onSave={(masterKey) => {
         setMasterKey(masterKey)
