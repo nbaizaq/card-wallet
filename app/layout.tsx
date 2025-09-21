@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Script src="https://telegram.org/js/telegram-web-app.js?59" />
-      <body>
+      <body className="h-screen">
         <Toaster />
         {children}
       </body>
