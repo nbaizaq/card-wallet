@@ -31,7 +31,7 @@ async function decrypt(
   salt: Uint8Array,
   iv: Uint8Array,
   data: string
-) {
+): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
       const derivedAesKey = await deriveAesKey(password, salt);
@@ -71,7 +71,9 @@ async function encrypt(
       );
 
       return resolve(
-        btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(result))))
+        btoa(
+          String.fromCharCode.apply(null, Array.from(new Uint8Array(result)))
+        )
       );
     } catch (error) {
       return reject(error);

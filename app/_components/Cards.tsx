@@ -28,7 +28,6 @@ export default async function Cards() {
   let salt: Uint8Array<ArrayBuffer> | null = user.prefs[ENCRYPTION_SALT] ? new TextEncoder().encode(user.prefs[ENCRYPTION_SALT]) : null;
 
   if (!iv || !salt) {
-    console.log("creating salt and iv");
     const { salt: _salt, iv: _iv } = await createSaltAndIv({ account, prefs: user.prefs });
     salt = _salt;
     iv = _iv;

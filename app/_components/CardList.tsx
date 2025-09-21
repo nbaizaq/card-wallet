@@ -7,8 +7,11 @@ import { AppwriteException } from "appwrite"
 import { encrypt, MASTER_KEY } from "@/lib/encrypt"
 import MasterKey from "./MasterKey"
 import { decrypt } from "@/lib/encrypt"
-import { Card, Cards } from "./types"
+import { Card, CardContent, Cards } from "./types"
 import CardBlock from "./CardBlock"
+import ConfirmationDialog from "./ConfirmationDialog"
+import DeleteConfirmation from "./DeleteConfirmation"
+import { LoaderIcon } from "lucide-react"
 
 export default function CardList(
   { salt, iv }:
@@ -37,11 +40,12 @@ export default function CardList(
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  async function onSave(card: Card) {
+  async function onSave(card: CardContent & { $id?: string }) {
     try {
       setLoading(true)
+      const { $id, ...rest } = card
       const content = JSON.stringify({
-        ...card
+        ...rest
       });
 
       if (!masterKey) {
@@ -51,12 +55,24 @@ export default function CardList(
 
       const encryptedCard = await encrypt(masterKey, salt, iv, content)
 
-      await fetch("/api", {
-        method: "POST",
-        body: JSON.stringify({
-          content: encryptedCard,
+      if ($id) {
+        await fetch("/api", {
+          method: "PUT",
+          body: JSON.stringify({
+            content: encryptedCard,
+            rowId: $id,
+          })
         })
-      })
+      }
+      else {
+        await fetch("/api", {
+          method: "POST",
+          body: JSON.stringify({
+            content: encryptedCard,
+          })
+        })
+      }
+
       setIsOpen(false)
       fetchCards()
     } catch (error) {
@@ -72,10 +88,19 @@ export default function CardList(
     }
   }
 
+  const [fetchingCards, setFetchingCards] = useState(false)
   async function fetchCards() {
-    const response = await fetch("/api")
-    const data = await response.json()
-    setCards(data)
+    try {
+      setFetchingCards(true)
+      const response = await fetch("/api")
+      const data = await response.json()
+      setCards(data)
+    } catch {
+      toast.error("Something went wrong while fetching cards. Please try again.")
+    }
+    finally {
+      setFetchingCards(false)
+    }
   }
 
   async function decryptCards() {
@@ -84,11 +109,46 @@ export default function CardList(
       return
     }
 
-    const decryptedCards = await Promise.all(cards.rows.map(async (card: Card) => {
-      const result = await decrypt(masterKey, salt, iv, card.content);
-      return JSON.parse(result as string)
+    Promise.all(cards.rows.map(card => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const content = await decrypt(masterKey, salt, iv, card.content);
+          const parsedContent = JSON.parse(content)
+          resolve({
+            ...card,
+            content: parsedContent
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
     }))
-    setDecryptedCards(decryptedCards as Card[])
+      .then((parsedCards) => {
+        setDecryptedCards(parsedCards as Card[])
+      }).catch(() => {
+        toast.error("Something went wrong while decrypting cards. Please check your master key and try again.")
+        setMasterKeyComponent(<MasterKey onSave={() => decryptCards()} />)
+      })
+  }
+
+  const [card, setCard] = useState<Card>()
+
+  function onEdit(card: Card) {
+    setIsOpen(true)
+    setCard(card)
+  }
+
+  const [confirmationDialog, setConfirmationDialog] = useState(false)
+  const [cardToDelete, setCardToDelete] = useState<Card>()
+  function onDelete(card: Card) {
+    setConfirmationDialog(true)
+    setCardToDelete(card)
+  }
+
+  function onDeleted() {
+    setConfirmationDialog(false)
+    setCardToDelete(undefined)
+    fetchCards()
   }
 
   useEffect(() => {
@@ -106,7 +166,10 @@ export default function CardList(
         <Button variant="outline" onClick={() => setIsOpen(true)}>
           Add a new card
         </Button>
-        <CardDialog open={isOpen} setIsOpen={setIsOpen} onSave={onSave} loading={loading} />
+        <CardDialog open={isOpen} setIsOpen={setIsOpen} onSave={onSave} loading={loading} card={card} />
+        <ConfirmationDialog open={confirmationDialog} setOpen={setConfirmationDialog}>
+          <DeleteConfirmation payload={cardToDelete} onCancel={() => setConfirmationDialog(false)} onDeleted={() => onDeleted()} />
+        </ConfirmationDialog>
       </div>
 
       {
@@ -115,10 +178,11 @@ export default function CardList(
             <div className="text-gray-500 text-center text-sm mt-4">
               No cards found
             </div>
+            {fetchingCards && <div className="flex justify-center items-center mt-4"><LoaderIcon className="animate-spin" /></div>}
           </div>
         ) : <div className="mt-4 space-y-4">
           {decryptedCards.map((card) => (
-            <CardBlock key={card.$id} card={card} />
+            <CardBlock key={card.$id} card={card} onEdit={onEdit} onDelete={onDelete} />
           ))}
         </div>
       }

@@ -14,7 +14,7 @@ import {
 import { maskitoTransform } from "@maskito/core"
 import { z } from "zod";
 import { LoaderIcon } from "lucide-react";
-// import { Card } from "./types";
+import { Card, CardContent } from "./types";
 
 const CURRENCIES = ["KGS", "USD", "AED"]
 
@@ -28,14 +28,21 @@ export const CardFormSchema = z.object({
   pin: z.string().trim().min(4, { message: "PIN must be 4 digits" }),
 });
 
-export default function CardDialogForm({ onSave, loading }: { onSave: (card: any) => void, loading: boolean }) {
-  const [name, setName] = useState("OPTIMA")
-  const [currency, setCurrency] = useState("KGS")
-  const [holder, setHolder] = useState("NURBEK BAIZAKOV")
-  const [number, setNumber] = useState("4169585355110809")
-  const [cvv, setCvv] = useState("194")
-  const [expire, setExpire] = useState("09/2029")
-  const [pin, setPin] = useState("9798")
+export default function CardDialogForm({ onSave, loading, card }: { onSave: (card: CardContent & { $id?: string }) => void, loading: boolean, card?: Card }) {
+  // const [name, setName] = useState("OPTIMA")
+  // const [currency, setCurrency] = useState("KGS")
+  // const [holder, setHolder] = useState("NURBEK BAIZAKOV")
+  // const [number, setNumber] = useState("4169585355110809")
+  // const [cvv, setCvv] = useState("194")
+  // const [expire, setExpire] = useState("09/2029")
+  // const [pin, setPin] = useState("9798")
+  const [name, setName] = useState(card?.content?.name || "")
+  const [currency, setCurrency] = useState(card?.content?.currency || "")
+  const [holder, setHolder] = useState(card?.content?.holder || "")
+  const [number, setNumber] = useState(card?.content?.number ? transformCardNumber(card?.content?.number) : "")
+  const [cvv, setCvv] = useState(card?.content?.cvv || "")
+  const [expire, setExpire] = useState(card?.content?.expire || "")
+  const [pin, setPin] = useState(card?.content?.pin || "")
 
   const [errors, setErrors] = useState<Record<string, string[]>>({})
 
@@ -59,6 +66,7 @@ export default function CardDialogForm({ onSave, loading }: { onSave: (card: any
 
     if (typeof onSave === 'function') {
       onSave({
+        $id: card?.$id,
         name,
         currency,
         holder,
@@ -102,7 +110,7 @@ export default function CardDialogForm({ onSave, loading }: { onSave: (card: any
     <form className="space-y-4" onSubmit={onAddCard}>
       <div>
         <div className="flex gap-2">
-          <Input placeholder="Bank" value={name} onChange={(e) => setName(e.target.value?.toUpperCase())} type="text" required name="name" disabled={loading} />
+          <Input placeholder="Bank" value={name} onChange={(e) => setName(e.target.value?.toUpperCase())} type="text" required name="name" disabled={loading} autoComplete="off" />
           <Select value={currency} onValueChange={(value) => setCurrency(value)} disabled={loading}>
             <SelectTrigger>
               <SelectValue placeholder="Currency" />
@@ -118,18 +126,18 @@ export default function CardDialogForm({ onSave, loading }: { onSave: (card: any
         {errors?.currency && <div className="form-error">{errors.currency}</div>}
       </div>
       <div>
-        <Input placeholder="Holder" value={holder} onChange={e => setHolder(e.target.value?.toUpperCase())} type="text" required name="holder" disabled={loading} />
+        <Input placeholder="Holder" value={holder} onChange={e => setHolder(e.target.value?.toUpperCase())} type="text" required name="holder" disabled={loading} autoComplete="off" />
         {errors?.holder && <div className="form-error">{errors.holder}</div>}
       </div>
       <div>
-        <Input placeholder="Number" value={number} onChange={e => setNumber(transformCardNumber(e.target.value))} type="text" required name="number" disabled={loading} />
+        <Input placeholder="Number" value={number} onChange={e => setNumber(transformCardNumber(e.target.value))} type="text" required name="number" disabled={loading} autoComplete="off" />
         {errors?.number && <div className="form-error">{errors.number}</div>}
       </div>
       <div>
         <div className="grid grid-cols-3 gap-2">
-          <Input placeholder="CVV" value={cvv} onChange={(e) => setCvv(transformCvv(e.target.value))} type="text" required name="cvv" disabled={loading} />
-          <Input placeholder="Expire" value={expire} onChange={(e) => setExpire(transformExpire(e.target.value))} type="text" required name="expire" disabled={loading} />
-          <Input placeholder="PIN" value={pin} onChange={(e) => setPin(transformPin(e.target.value))} type="text" required name="pin" disabled={loading} />
+          <Input placeholder="CVV" value={cvv} onChange={(e) => setCvv(transformCvv(e.target.value))} type="text" required name="cvv" disabled={loading} autoComplete="off" />
+          <Input placeholder="Expire" value={expire} onChange={(e) => setExpire(transformExpire(e.target.value))} type="text" required name="expire" disabled={loading} autoComplete="off" />
+          <Input placeholder="PIN" value={pin} onChange={(e) => setPin(transformPin(e.target.value))} type="text" required name="pin" disabled={loading} autoComplete="off" />
         </div>
         {errors?.cvv && <div className="form-error">{errors.cvv}</div>}
         {errors?.expire && <div className="form-error">{errors.expire}</div>}

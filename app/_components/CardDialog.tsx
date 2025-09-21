@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/dialog"
 import CardDialogForm from "./CardDialogForm"
 import { useEffect, useState } from "react"
-import { Card } from "./types"
+import { Card, CardContent } from "./types"
 
-export default function CardDialog({ open, setIsOpen, onSave, loading }: { open: boolean, setIsOpen: (open: boolean) => void, onSave: (card: Card) => void, loading: boolean }) {
+export default function CardDialog({ open, setIsOpen, onSave, loading, card }: { open: boolean, setIsOpen: (open: boolean) => void, onSave: (card: CardContent & { $id?: string }) => void, loading: boolean, card?: Card }) {
   const [showFormDelayed, setShowFormDelayed] = useState(false)
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function CardDialog({ open, setIsOpen, onSave, loading }: { open:
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="mb-2">Add a new card</DialogTitle>
-          {showFormDelayed && <CardDialogForm onSave={onSave} loading={loading} />}
+          {showFormDelayed && <CardDialogForm onSave={onSave} loading={loading} card={card} />}
         </DialogHeader>
       </DialogContent>
     </Dialog>
