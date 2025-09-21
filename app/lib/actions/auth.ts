@@ -1,0 +1,52 @@
+"use server";
+
+import UseAppwrite from "@/app/appwrite";
+import { SigninFormSchema, FormState } from "../definitions";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { AppwriteException } from "appwrite";
+
+export async function signin(state: FormState, formData: FormData) {
+  const validatedFields = SigninFormSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  const { email, password } = validatedFields.data;
+  const { account } = await UseAppwrite();
+
+  try {
+    const response = await account.createEmailPasswordSession({
+      email,
+      password,
+    });
+
+    const cookieStore = await cookies();
+    cookieStore.set(
+      `a_session_${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`,
+      response.secret,
+      {
+        httpOnly: true,
+        secure: true,
+        expires: new Date(response.expire),
+        sameSite: "strict",
+        path: "/",
+      }
+    );
+
+  } catch (error: unknown) {
+    if (error instanceof AppwriteException) {
+      return {
+        error: error.message,
+      };
+    }
+  }
+
+  redirect("/");
+}
