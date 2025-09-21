@@ -19,7 +19,7 @@ export default function CardList(
       salt?: Uint8Array<ArrayBuffer>, iv?: Uint8Array<ArrayBuffer>
     }
 ) {
-  const [masterKeyComponent, setMasterKeyComponent] = useState<React.ReactNode | null>(null)
+  const [showMasterKeyComponent, setShowMasterKeyComponent] = useState<boolean>(false)
   const [masterKey, setMasterKey] = useState<string | null>(null)
   const [cards, setCards] = useState<Cards>({
     total: 0,
@@ -30,7 +30,7 @@ export default function CardList(
   function initMasterKey() {
     const _masterKey = window.sessionStorage.getItem(MASTER_KEY);
     if (!_masterKey) {
-      setMasterKeyComponent(<MasterKey onSave={() => decryptCards()} />)
+      setShowMasterKeyComponent(true)
     }
     else {
       setMasterKey(_masterKey)
@@ -137,7 +137,7 @@ export default function CardList(
         setDecryptedCards(parsedCards as Card[])
       }).catch(() => {
         toast.error("Something went wrong while decrypting cards. Please check your master key and try again.")
-        setMasterKeyComponent(<MasterKey onSave={() => decryptCards()} />)
+        setShowMasterKeyComponent(true)
       })
   }
 
@@ -196,7 +196,10 @@ export default function CardList(
           ))}
         </div>
       }
-      {masterKeyComponent}
+      {showMasterKeyComponent && <MasterKey onSave={(masterKey) => {
+        setMasterKey(masterKey)
+        setShowMasterKeyComponent(false)
+      }} onCancel={() => setShowMasterKeyComponent(false)} />}
     </div>
   )
 }

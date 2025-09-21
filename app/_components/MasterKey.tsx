@@ -24,7 +24,7 @@ const MasterKeySchema = z.object({
     }),
 })
 
-export default function MasterKey({ onSave, onCancel }: { onSave: () => void, onCancel?: () => void }) {
+export default function MasterKey({ onSave, onCancel }: { onSave: (masterKey: string) => void, onCancel?: () => void }) {
   const [masterKey, setMasterKey] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
@@ -49,7 +49,7 @@ export default function MasterKey({ onSave, onCancel }: { onSave: () => void, on
 
     sessionStorage.setItem(MASTER_KEY, masterKey);
     if (typeof onSave === 'function') {
-      onSave();
+      onSave(masterKey);
     }
     setOpen(false)
   }
@@ -71,6 +71,7 @@ export default function MasterKey({ onSave, onCancel }: { onSave: () => void, on
                   onBlur={() => validate()}
                   onFocus={() => validate()}
                   required
+                  autoComplete={showPassword ? "off" : "new-password"}
                 />
                 <Button variant="outline" type="button" onClick={() => setShowPassword(!showPassword)}>
                   <EyeIcon />
