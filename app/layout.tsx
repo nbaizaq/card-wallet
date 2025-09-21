@@ -2,7 +2,6 @@
 import { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
-import Script from "next/script";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -27,8 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Script src="https://telegram.org/js/telegram-web-app.js?59" />
-      <body className="h-screen">
+      <body>
         <Toaster />
         {children}
       </body>

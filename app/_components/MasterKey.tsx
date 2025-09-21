@@ -12,7 +12,6 @@ import { EyeIcon } from "lucide-react"
 import { FormEvent, useState } from "react"
 import { MASTER_KEY } from "@/lib/encrypt"
 import { z } from "zod"
-import { cloudStorage } from '@telegram-apps/sdk-react';
 
 const MasterKeySchema = z.object({
   masterKey: z.string()
@@ -43,21 +42,12 @@ export default function MasterKey({ onSave, onCancel }: { onSave: (masterKey: st
     return true;
   }
 
-  async function saveMasterKey(masterKey: string) {
-    if (cloudStorage.isSupported()) {
-      await cloudStorage.setItem(MASTER_KEY, masterKey)
-    }
-    else {
-      window.localStorage.setItem(MASTER_KEY, masterKey)
-    }
-  }
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!validate()) return;
 
-    await saveMasterKey(masterKey);
+    window.localStorage.setItem(MASTER_KEY, masterKey)
     if (typeof onSave === 'function') {
       onSave(masterKey);
     }

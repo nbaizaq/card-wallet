@@ -12,7 +12,6 @@ import CardBlock from "./CardBlock"
 import ConfirmationDialog from "./ConfirmationDialog"
 import DeleteConfirmation from "./DeleteConfirmation"
 import { LoaderIcon } from "lucide-react"
-import { cloudStorage } from '@telegram-apps/sdk-react';
 
 export default function CardList(
   { salt, iv }:
@@ -28,31 +27,13 @@ export default function CardList(
   })
   const [decryptedCards, setDecryptedCards] = useState<Card[]>([])
 
-  async function getMasterKey() {
-    if (cloudStorage.isSupported()) {
-      return await cloudStorage.getItem(MASTER_KEY)
+  function initMasterKey() {
+    const _masterKey = window.localStorage.getItem(MASTER_KEY);
+    if (!_masterKey) {
+      setShowMasterKeyComponent(true)
     }
     else {
-      return window.localStorage.getItem(MASTER_KEY)
-    }
-  }
-
-  async function initMasterKey() {
-    try {
-      const _masterKey = await getMasterKey();
-      if (!_masterKey) {
-        setShowMasterKeyComponent(true)
-      }
-      else {
-        setMasterKey(_masterKey)
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error("Something went wrong while getting master key. " + error.message + ". Please try again.")
-      }
-      else {
-        toast.error("Something went wrong while getting master key. Please try again.")
-      }
+      setMasterKey(_masterKey)
     }
   }
 
