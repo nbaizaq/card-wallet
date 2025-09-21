@@ -16,7 +16,7 @@ import { LoaderIcon } from "lucide-react"
 export default function CardList(
   { salt, iv }:
     {
-      salt: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>
+      salt?: Uint8Array<ArrayBuffer>, iv?: Uint8Array<ArrayBuffer>
     }
 ) {
   const [masterKeyComponent, setMasterKeyComponent] = useState<React.ReactNode | null>(null)
@@ -42,6 +42,11 @@ export default function CardList(
 
   async function onSave(card: CardContent & { $id?: string }) {
     try {
+      if (!salt || !iv) {
+        toast.error("Salt and IV are not set")
+        return
+      }
+
       setLoading(true)
       const { $id, ...rest } = card
       const content = JSON.stringify({
@@ -106,6 +111,11 @@ export default function CardList(
   async function decryptCards() {
     if (!masterKey) {
       toast.error("Master key is not set")
+      return
+    }
+
+    if (!salt || !iv) {
+      toast.error("Salt and IV are not set")
       return
     }
 
