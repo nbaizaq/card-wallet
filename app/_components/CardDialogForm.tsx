@@ -29,13 +29,6 @@ export const CardFormSchema = z.object({
 });
 
 export default function CardDialogForm({ onSave, loading, card }: { onSave: (card: CardContent & { $id?: string }) => void, loading: boolean, card?: Card }) {
-  // const [name, setName] = useState("OPTIMA")
-  // const [currency, setCurrency] = useState("KGS")
-  // const [holder, setHolder] = useState("NURBEK BAIZAKOV")
-  // const [number, setNumber] = useState("4169585355110809")
-  // const [cvv, setCvv] = useState("194")
-  // const [expire, setExpire] = useState("09/2029")
-  // const [pin, setPin] = useState("9798")
   const [name, setName] = useState(card?.content?.name || "")
   const [currency, setCurrency] = useState(card?.content?.currency || "")
   const [holder, setHolder] = useState(card?.content?.holder || "")

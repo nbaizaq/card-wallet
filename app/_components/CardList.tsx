@@ -173,7 +173,10 @@ export default function CardList(
   return (
     <div>
       <div className="flex justify-end">
-        <Button variant="outline" onClick={() => setIsOpen(true)}>
+        <Button variant="outline" onClick={() => {
+          setCard(undefined)
+          setIsOpen(true)
+        }}>
           Add a new card
         </Button>
         <CardDialog open={isOpen} setIsOpen={setIsOpen} onSave={onSave} loading={loading} card={card} />
