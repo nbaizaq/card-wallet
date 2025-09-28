@@ -1,7 +1,8 @@
 // import { Geist, Geist_Mono } from "next/font/google";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Script from "next/script";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -13,11 +14,19 @@ import { Toaster } from "sonner";
 //   subsets: ["latin"],
 // });
 
-export const metadata: Metadata = {
-  title: "Card Wallet",
-  description: "A simple card wallet to store your cards",
-};
+const APP_NAME = "Card Wallet";
+const APP_DEFAULT_TITLE = "Card Wallet";
+const APP_TITLE_TEMPLATE = "%s - Card Wallet";
+const APP_DESCRIPTION = "A simple card wallet to store your cards";
 
+export const metadata: Metadata = {
+  applicationName: APP_NAME,
+  title: {
+    default: APP_DEFAULT_TITLE,
+    template: APP_TITLE_TEMPLATE,
+  },
+  description: APP_DESCRIPTION,
+};
 
 export default function RootLayout({
   children,
@@ -26,6 +35,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script src="/register.js" strategy="beforeInteractive" />
+      </head>
       <body>
         <Toaster />
         {children}

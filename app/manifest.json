@@ -1,0 +1,11 @@
+{
+  "name": "Card Wallet",
+  "short_name": "Card Wallet",
+  "description": "A simple card wallet to store your cards",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": []
+}
