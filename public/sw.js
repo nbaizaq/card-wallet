@@ -1,5 +1,5 @@
 // Establish a cache name from the package.json version
-const version = "0.1.1";
+const version = "0.1.2";
 const cacheName = `cache:${version}`;
 
 self.addEventListener("install", (event) => {
