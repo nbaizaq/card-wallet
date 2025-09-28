@@ -39,13 +39,22 @@ export async function signin(state: FormState, formData: FormData) {
         path: "/",
       }
     );
-
   } catch (error: unknown) {
-    if (error instanceof AppwriteException) {
-      return {
-        error: error.message,
-      };
-    }
+    try {
+      if ("response" in (error as AppwriteException)) {
+        const response = JSON.parse(
+          (error as AppwriteException)?.response ?? "Something went wrong"
+        );
+        const message = response.message ?? "Something went wrong";
+        return {
+          error: message,
+        };
+      }
+    } catch {}
+
+    return {
+      error: (error as Error)?.message ?? "Something went wrong",
+    };
   }
 
   redirect("/");

@@ -47,7 +47,7 @@ export default async function Cards() {
   }
 
   return (
-    <div>
+    <div className="mobile-container">
       <Header className="mb-4" user={user} />
       <CardList salt={salt} iv={iv} />
     </div>

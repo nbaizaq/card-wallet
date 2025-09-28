@@ -1,18 +1,19 @@
-// import { Geist, Geist_Mono } from "next/font/google";
-import { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Script from "next/script";
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
 
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 const APP_NAME = "Card Wallet";
 const APP_DEFAULT_TITLE = "Card Wallet";
@@ -33,10 +34,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const developerMode = process.env.NODE_ENV === "development";
   return (
-    <html lang="en">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
-        <Script src="/register.js" strategy="beforeInteractive" />
+        {!developerMode && <Script src="/register.js" strategy="beforeInteractive" />}
       </head>
       <body>
         <Toaster />
