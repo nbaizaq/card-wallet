@@ -1,5 +1,5 @@
 // Establish a cache name from the package.json version
-const version = "0.1.0";
+const version = "0.1.1";
 const cacheName = `cache:${version}`;
 
 self.addEventListener("install", (event) => {
@@ -23,6 +23,8 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", function (event) {
+  if(event.request.url.includes("chrome-extension")) return;
+  
   // Open the cache
   event.respondWith(
     caches.open(cacheName).then((cache) => {
