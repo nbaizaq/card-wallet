@@ -25,7 +25,10 @@ function ColorListButtons({ color, setColor }: { color: string, setColor: (color
       <legend className="mb-1 text-gray-500 font-semibold">Color</legend>
       <div className="flex gap-2 flex-wrap">
         {colorList.map((_color) => (
-          <button type="button" key={_color} className={`w-10 h-10 rounded-md ${color === _color ? 'border-2 border-black ' + _color : _color}`} onClick={() => setColor(_color)}></button>
+          <button type="button" key={_color}
+            className={`cursor-pointer w-10 h-10 rounded-md border-4 border-accent ${color === _color ? 'transform scale-120 duration-100' : ''}`} onClick={() => _color === color ? setColor("") : setColor(_color)}
+            style={{ backgroundColor: _color}}
+          ></button>
         ))}
       </div>
     </fieldset>

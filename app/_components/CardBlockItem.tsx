@@ -12,7 +12,8 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
   }
 
   return (
-    <div className={`select-none rounded-lg ${card.color} ${!card.color ? 'border-1 border-gray-200' : ''} p-4 space-y-4`}>
+    <div className={`relative select-none rounded-lg ${!card.color ? 'border-1 border-gray-200 dark:border-gray-700' : ''} p-4 space-y-4`}>
+      {card.color && <div className="absolute top-0 right-0 w-full h-full -z-10 rounded-lg opacity-60 dark:opacity-40" style={{ backgroundColor: card.color }} />}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="font-light">{card.name}</div>
@@ -20,10 +21,10 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
           <span className="font-bold">{card.currency}</span>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" className="size-8" onClick={() => onEdit()}>
+          <Button variant="outline" size="icon" className="size-8" onClick={() => onEdit()}>
             <PencilIcon />
           </Button>
-          <Button variant="ghost" size="icon" className="size-8" onClick={() => onDelete()}>
+          <Button variant="outline" size="icon" className="size-8" onClick={() => onDelete()}>
             <TrashIcon />
           </Button>
         </div>
@@ -37,7 +38,7 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
           {card.number}
         </button>
 
-        <div className="flex gap-2 justify-between items-center text-gray-700">
+        <div className="flex gap-2 justify-between items-center text-gray-700 dark:text-gray-300">
           <div>
             <div className="text-xs">
               CVV
@@ -64,6 +65,6 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
           </div>
         </div>
       </div>
-    </div>
+    </ div>
   )
 }

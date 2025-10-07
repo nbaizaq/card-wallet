@@ -175,12 +175,16 @@ export default function CardList(
   return (
     <div>
       <div className="flex justify-end">
-        <Button variant="outline" onClick={() => {
-          setCard(undefined)
-          setIsOpen(true)
-        }}>
-          Add a new card
-        </Button>
+        {
+          masterKey && (
+            <Button variant="outline" onClick={() => {
+              setCard(undefined)
+              setIsOpen(true)
+            }}>
+              Add a new card
+            </Button>
+          )
+        }
         <CardDialog open={isOpen} setIsOpen={setIsOpen} onSave={onSave} loading={loading} card={card} />
         <ConfirmationDialog open={confirmationDialog} setOpen={setConfirmationDialog}>
           <DeleteConfirmation payload={cardToDelete} onCancel={() => setConfirmationDialog(false)} onDeleted={() => onDeleted()} />

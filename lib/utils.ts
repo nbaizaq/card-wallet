@@ -6,12 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const colorList: string[] = [
-  "bg-gray-200",
-  "bg-red-200",
-  "bg-orange-200",
-  "bg-green-200",
-  "bg-sky-200",
-  "bg-blue-200",
-  "bg-indigo-200",
-  "bg-violet-200",
+  "#E6E6EA",
+  "#FE4A49",
+  "#FED766",
+  "#63C132",
+  "#9DD1F1",
+  "#FFFFFF",
+  "#000000",
 ];

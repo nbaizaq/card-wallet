@@ -9,14 +9,39 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LoaderIcon, LogOutIcon } from "lucide-react"
+import { LoaderIcon, LogOutIcon, MoonIcon, SunIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+
+function initTheme() {
+  const theme = window.document.body.classList.contains("dark") ? "dark" : "light";
+  window.cookieStore.set("theme", theme);
+  return theme;
+}
+
+function setThemeCookie(theme: "light" | "dark") {
+  window.document.body.classList.toggle("dark", theme === "dark");
+  window.cookieStore.set("theme", theme);
+}
 
 export default function Header({ className, user }: { className?: string, user?: Models.User }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const [theme, setTheme] = useState<"light" | "dark">();
+
+  useEffect(() => {
+    const _theme = initTheme();
+    setTheme(_theme);
+  }, []);
+
+  const toggleTheme = () => {
+    const _theme = theme === "light" ? "dark" : "light";
+    setThemeCookie(_theme);
+    setTheme(_theme);
+  }
 
   async function signout() {
     try {
@@ -42,21 +67,26 @@ export default function Header({ className, user }: { className?: string, user?:
         <div className="text-xl font-bold">
           Card wallet
         </div>
-        {user &&
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Avatar>
-                <AvatarFallback className="text-sm font-bold">{initials}</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signout()} disabled={loading}>{
-                loading ? <LoaderIcon className="animate-spin" /> : <LogOutIcon className="w-4 h-4" />} Log out</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        }
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="size-8" onClick={toggleTheme}>
+            {theme === "dark" ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
+          </Button>
+          {user &&
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar>
+                  <AvatarFallback className="text-sm font-bold">{initials}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signout()} disabled={loading}>{
+                  loading ? <LoaderIcon className="animate-spin" /> : <LogOutIcon className="w-4 h-4" />} Log out</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          }
+        </div>
       </div>
     </div>
   )
