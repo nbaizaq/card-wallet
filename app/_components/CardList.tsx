@@ -40,7 +40,7 @@ export default function CardList(
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  async function onSave(card: CardContent & { $id?: string }) {
+  async function onSave(card: CardContent & { $id?: string, color?: string }) {
     try {
       if (!salt || !iv) {
         toast.error("Salt and IV are not set")
@@ -65,6 +65,7 @@ export default function CardList(
           method: "PUT",
           body: JSON.stringify({
             content: encryptedCard,
+            color: card?.color ?? null,
             rowId: $id,
           })
         })
@@ -74,6 +75,7 @@ export default function CardList(
           method: "POST",
           body: JSON.stringify({
             content: encryptedCard,
+            color: card?.color ?? null,
           })
         })
       }

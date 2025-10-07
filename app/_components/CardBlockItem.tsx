@@ -1,82 +1,69 @@
 'use client'
 
-import { JSX } from "react";
-import { toast } from 'sonner'
-import {
-  Card,
-  CardContent,
-  CardTitle,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { PencilIcon, TrashIcon, CopyIcon } from "lucide-react"
+import { PencilIcon, TrashIcon } from "lucide-react"
 import { type CardContent as CardContentType } from "./types"
+import { toast } from "sonner"
 
-function CardField({ label, value }: { label: string, value: string }): JSX.Element {
+export default function CardBlock({ card, onEdit, onDelete }: { card: CardContentType & { color?: string }, onEdit: () => void, onDelete: () => void }) {
   const onCopyValue = (value: string) => {
     navigator.clipboard.writeText(value)
     toast.success('Copied to clipboard')
   }
 
   return (
-    <div className="space-y-1">
-      <div className="card-field">{label}</div>
-      <div className="flex gap-2">
-        <div className="card-field-value select-none flex-grow">{value}</div>
-        <button className="p-2 rounded-md" onClick={() => onCopyValue(value)}>
-          <CopyIcon size={16} />
-        </button>
-      </div>
-    </div>
-  )
-}
-
-export default function CardBlock({ card, onEdit, onDelete }: { card: CardContentType, onEdit: () => void, onDelete: () => void }) {
-  const cardFields = [
-    {
-      label: "Holder",
-      value: card.holder,
-    },
-    {
-      label: "Number",
-      value: card.number,
-    },
-    {
-      label: "CCV",
-      value: card.cvv,
-    },
-    {
-      label: "Expire",
-      value: card.expire,
-    },
-    {
-      label: "PIN",
-      value: card.pin,
-    },
-  ]
-
-  return (
-    <Card className="gap-2 py-4">
-      <div className="flex justify-between gap-2 items-center px-4">
-        <CardTitle>{card.name} <Badge variant="outline">{card.currency}</Badge></CardTitle>
-        <div className="flex gap-2 items-center">
-          <Button variant="outline" size="icon" className="size-8" onClick={() => onEdit()}>
+    <div className={`select-none rounded-lg ${card.color} ${!card.color ? 'border-1 border-gray-200' : ''} p-4 space-y-2`}>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <div className="font-light">{card.name}</div>
+          <span>·</span>
+          <span className="font-bold">{card.currency}</span>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="ghost" size="icon" className="size-8" onClick={() => onEdit()}>
             <PencilIcon />
           </Button>
-          <Button variant="destructive" size="icon" className="size-8" onClick={() => onDelete()}>
+          <Button variant="ghost" size="icon" className="size-8" onClick={() => onDelete()}>
             <TrashIcon />
           </Button>
         </div>
       </div>
-      <Separator />
-      <CardContent className="px-4">
-        <div className="space-y-4">
-          {cardFields.map(field => (
-            <CardField key={field.label} label={field.label} value={field.value} />
-          ))}
+      <div className="space-y-2">
+        <button className="cursor-pointer block" onClick={() => onCopyValue(card.holder)}>
+          {card.holder}
+        </button>
+
+        <button className="text-xl font-mono cursor-pointer block" onClick={() => onCopyValue(card.number)}>
+          {card.number}
+        </button>
+
+        <div className="flex gap-2 justify-between items-center text-gray-700">
+          <div>
+            <div className="text-xs">
+              CVV
+            </div>
+            <button className="font-mono cursor-pointer transition-all duration-100" onClick={() => onCopyValue(card.cvv)}>
+              {card.cvv}
+            </button>
+          </div>
+          <div>
+            <div className="text-xs">
+              Valid thru
+            </div>
+            <button className="font-mono cursor-pointer" onClick={() => onCopyValue(card.expire)}>
+              {card.expire}
+            </button>
+          </div>
+          <div>
+            <div className="text-xs">
+              PIN
+            </div>
+            <button className="font-mono cursor-pointer" onClick={() => onCopyValue(card.pin)}>
+              {card.pin}
+            </button>
+          </div>
         </div>
-      </CardContent>
-    </Card >
+      </div>
+    </div>
   )
 }

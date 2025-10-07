@@ -15,11 +15,25 @@ import { maskitoTransform } from "@maskito/core"
 import { z } from "zod";
 import { LoaderIcon } from "lucide-react";
 import { Card, CardContent } from "./types";
+import { colorList } from "@/lib/utils";
 
 const CURRENCIES = ["KGS", "USD", "AED"]
 
+function ColorListButtons({ color, setColor }: { color: string, setColor: (color: string) => void }) {
+  return (
+    <fieldset>
+      <legend className="mb-1 text-gray-500 font-semibold">Color</legend>
+      <div className="flex gap-2 flex-wrap">
+        {colorList.map((_color) => (
+          <button type="button" key={_color} className={`w-10 h-10 rounded-md ${color === _color ? 'border-2 border-black ' + _color : _color}`} onClick={() => setColor(_color)}></button>
+        ))}
+      </div>
+    </fieldset>
+  )
+}
+
 export const CardFormSchema = z.object({
-  name: z.string().trim().regex(/^[a-zA-Z]+$/, { message: "Name must contain only letters" }),
+  name: z.string().trim().regex(/^[a-zA-Z\s]+$/, { message: "Name must contain only letters" }),
   currency: z.enum(CURRENCIES, { message: "Currency is required" }),
   holder: z.string().trim().regex(/^([A-Z]+)\s([A-Z]+)$/, { message: "Holder must contain only uppercase letters" }),
   number: z.string().trim().regex(/^([0-9]+\s?){4}$/, { message: "Number must be 16 digits" }),
@@ -28,7 +42,7 @@ export const CardFormSchema = z.object({
   pin: z.string().trim().min(4, { message: "PIN must be 4 digits" }),
 });
 
-export default function CardDialogForm({ onSave, loading, card }: { onSave: (card: CardContent & { $id?: string }) => void, loading: boolean, card?: Card }) {
+export default function CardDialogForm({ onSave, loading, card }: { onSave: (card: CardContent & { $id?: string, color?: string }) => void, loading: boolean, card?: Card }) {
   const [name, setName] = useState(card?.content?.name || "")
   const [currency, setCurrency] = useState(card?.content?.currency || "")
   const [holder, setHolder] = useState(card?.content?.holder || "")
@@ -36,6 +50,7 @@ export default function CardDialogForm({ onSave, loading, card }: { onSave: (car
   const [cvv, setCvv] = useState(card?.content?.cvv || "")
   const [expire, setExpire] = useState(card?.content?.expire || "")
   const [pin, setPin] = useState(card?.content?.pin || "")
+  const [color, setColor] = useState(card?.content?.color || "")
 
   const [errors, setErrors] = useState<Record<string, string[]>>({})
 
@@ -67,6 +82,7 @@ export default function CardDialogForm({ onSave, loading, card }: { onSave: (car
         cvv,
         expire,
         pin,
+        color,
       })
     }
   }
@@ -101,7 +117,8 @@ export default function CardDialogForm({ onSave, loading, card }: { onSave: (car
 
   return (
     <form className="space-y-4" onSubmit={onAddCard}>
-      <div>
+      <fieldset>
+        <legend className="mb-1 text-gray-500 font-semibold">Bank & Currency</legend>
         <div className="flex gap-2">
           <Input placeholder="Bank" value={name} onChange={(e) => setName(e.target.value?.toUpperCase())} type="text" required name="name" disabled={loading} autoComplete="off" />
           <Select value={currency} onValueChange={(value) => setCurrency(value)} disabled={loading}>
@@ -117,28 +134,41 @@ export default function CardDialogForm({ onSave, loading, card }: { onSave: (car
         </div>
         {errors?.name && <div className="form-error">{errors.name}</div>}
         {errors?.currency && <div className="form-error">{errors.currency}</div>}
-      </div>
-      <div>
-        <Input placeholder="Holder" value={holder} onChange={e => setHolder(e.target.value?.toUpperCase())} type="text" required name="holder" disabled={loading} autoComplete="off" />
-        {errors?.holder && <div className="form-error">{errors.holder}</div>}
-      </div>
-      <div>
+      </fieldset>
+      <fieldset>
+        <legend className="mb-1 text-gray-500 font-semibold">Card holder</legend>
+        <div>
+          <Input placeholder="Holder" value={holder} onChange={e => setHolder(e.target.value?.toUpperCase())} type="text" required name="holder" disabled={loading} autoComplete="off" />
+          {errors?.holder && <div className="form-error">{errors.holder}</div>}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend className="mb-1 text-gray-500 font-semibold">Card number</legend>
         <Input placeholder="Number" value={number} onChange={e => setNumber(transformCardNumber(e.target.value))} type="text" required name="number" disabled={loading} autoComplete="off" />
         {errors?.number && <div className="form-error">{errors.number}</div>}
-      </div>
-      <div>
-        <div className="grid grid-cols-3 gap-2">
+      </fieldset>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <fieldset>
+          <legend className="mb-1 text-gray-500 font-semibold">CVV</legend>
           <Input placeholder="CVV" value={cvv} onChange={(e) => setCvv(transformCvv(e.target.value))} type="text" required name="cvv" disabled={loading} autoComplete="off" />
+        </fieldset>
+        <fieldset>
+          <legend className="mb-1 text-gray-500 font-semibold">Expire</legend>
           <Input placeholder="Expire" value={expire} onChange={(e) => setExpire(transformExpire(e.target.value))} type="text" required name="expire" disabled={loading} autoComplete="off" />
+        </fieldset>
+        <fieldset>
+          <legend className="mb-1 text-gray-500 font-semibold">PIN</legend>
           <Input placeholder="PIN" value={pin} onChange={(e) => setPin(transformPin(e.target.value))} type="text" required name="pin" disabled={loading} autoComplete="off" />
-        </div>
+        </fieldset>
         {errors?.cvv && <div className="form-error">{errors.cvv}</div>}
         {errors?.expire && <div className="form-error">{errors.expire}</div>}
         {errors?.pin && <div className="form-error">{errors.pin}</div>}
       </div>
+      <ColorListButtons color={color} setColor={setColor} />
+
       <Button className="w-full" type="submit" disabled={loading}>
         {loading && <LoaderIcon className="animate-spin" />}
         Save</Button>
-    </form>
+    </form >
   )
 }
