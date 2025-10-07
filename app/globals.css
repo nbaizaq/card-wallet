@@ -5,11 +5,11 @@
 
 @layer components {
   .card-field {
-    @apply text-sm text-gray-500;
+    @apply text-sm text-gray-500 font-semibold;
   }
 
   .card-field-value {
-    @apply text-sm font-mono bg-gray-100 p-1 px-2 rounded-md col-span-3;
+    @apply text-sm font-mono bg-gray-100 p-1 px-2 rounded-md;
   }
 
   .form-error {

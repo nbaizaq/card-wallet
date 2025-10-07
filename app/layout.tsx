@@ -2,8 +2,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
-import Script from "next/script";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,12 +32,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const developerMode = process.env.NODE_ENV === "development";
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <head>
-        {!developerMode && <Script src="/register.js" strategy="beforeInteractive" />}
-      </head>
       <body>
         <Toaster />
         {children}

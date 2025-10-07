@@ -11,6 +11,7 @@ stored in local storage.
 
 ## Roadmap
 - [x] PWA support
+- [ ] Test encryption/decryption
 - [ ] Read [article 1](https://www.inkandswitch.com/essay/local-first/)
 - [ ] Read [article 2](https://cincheo.com/2023/10/10/le-8eme-principe-oublie-du-local-first/)
 - [ ] Read [article 3](https://ably.com/blog/crdts-distributed-data-consistency-challenges)

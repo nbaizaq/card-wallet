@@ -12,6 +12,7 @@ import { Card, CardContent } from "./types"
 
 export default function CardDialog({ open, setIsOpen, onSave, loading, card }: { open: boolean, setIsOpen: (open: boolean) => void, onSave: (card: CardContent & { $id?: string }) => void, loading: boolean, card?: Card }) {
   const [showFormDelayed, setShowFormDelayed] = useState(false)
+  const title = card ? "Edit card" : "Add a new card"
 
   useEffect(() => {
     if (open) {
@@ -28,7 +29,7 @@ export default function CardDialog({ open, setIsOpen, onSave, loading, card }: {
     <Dialog open={open} onOpenChange={setIsOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="mb-2">Add a new card</DialogTitle>
+          <DialogTitle className="mb-2">{title}</DialogTitle>
           {showFormDelayed && <CardDialogForm onSave={onSave} loading={loading} card={card} />}
         </DialogHeader>
       </DialogContent>

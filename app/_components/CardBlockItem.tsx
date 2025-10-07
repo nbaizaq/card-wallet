@@ -10,7 +10,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { PencilIcon, TrashIcon } from "lucide-react"
+import { PencilIcon, TrashIcon, CopyIcon } from "lucide-react"
 import { type CardContent as CardContentType } from "./types"
 
 function CardField({ label, value }: { label: string, value: string }): JSX.Element {
@@ -20,9 +20,14 @@ function CardField({ label, value }: { label: string, value: string }): JSX.Elem
   }
 
   return (
-    <div className="grid grid-cols-4 gap-2 items-center">
-      <div className="card-field">{label}:</div>
-      <div className="card-field-value" onClick={() => onCopyValue(value)}>{value}</div>
+    <div className="space-y-1">
+      <div className="card-field">{label}</div>
+      <div className="flex gap-2">
+        <div className="card-field-value select-none flex-grow">{value}</div>
+        <button className="p-2 rounded-md" onClick={() => onCopyValue(value)}>
+          <CopyIcon size={16} />
+        </button>
+      </div>
     </div>
   )
 }
@@ -56,7 +61,7 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
       <div className="flex justify-between gap-2 items-center px-4">
         <CardTitle>{card.name} <Badge variant="outline">{card.currency}</Badge></CardTitle>
         <div className="flex gap-2 items-center">
-          <Button variant="secondary" size="icon" className="size-8" onClick={() => onEdit()}>
+          <Button variant="outline" size="icon" className="size-8" onClick={() => onEdit()}>
             <PencilIcon />
           </Button>
           <Button variant="destructive" size="icon" className="size-8" onClick={() => onDelete()}>
@@ -65,8 +70,8 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
         </div>
       </div>
       <Separator />
-      <CardContent>
-        <div className="space-y-2">
+      <CardContent className="px-4">
+        <div className="space-y-4">
           {cardFields.map(field => (
             <CardField key={field.label} label={field.label} value={field.value} />
           ))}
