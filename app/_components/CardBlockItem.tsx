@@ -12,7 +12,7 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
   }
 
   return (
-    <div className={`select-none rounded-lg ${card.color} ${!card.color ? 'border-1 border-gray-200' : ''} p-4 space-y-2`}>
+    <div className={`select-none rounded-lg ${card.color} ${!card.color ? 'border-1 border-gray-200' : ''} p-4 space-y-4`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="font-light">{card.name}</div>
@@ -28,7 +28,7 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
           </Button>
         </div>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-4">
         <button className="cursor-pointer block" onClick={() => onCopyValue(card.holder)}>
           {card.holder}
         </button>
