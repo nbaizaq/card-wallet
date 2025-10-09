@@ -27,7 +27,7 @@ function ColorListButtons({ color, setColor }: { color: string, setColor: (color
         {colorList.map((_color) => (
           <button type="button" key={_color}
             className={`cursor-pointer w-10 h-10 rounded-md border-4 border-accent ${color === _color ? 'transform scale-120 duration-100' : ''}`} onClick={() => _color === color ? setColor("") : setColor(_color)}
-            style={{ backgroundColor: _color}}
+            style={{ backgroundColor: _color }}
           ></button>
         ))}
       </div>
@@ -45,7 +45,7 @@ export const CardFormSchema = z.object({
   pin: z.string().trim().min(4, { message: "PIN must be 4 digits" }),
 });
 
-export default function CardDialogForm({ onSave, loading, card }: { onSave: (card: CardContent & { $id?: string, color?: string }) => void, loading: boolean, card?: Card }) {
+export default function CardDialogForm({ onSave, loading, card }: { onSave: (card: CardContent & { $id?: string, color?: string, binData?: Record<string, unknown> }) => void, loading: boolean, card?: Card }) {
   const [name, setName] = useState(card?.content?.name || "")
   const [currency, setCurrency] = useState(card?.content?.currency || "")
   const [holder, setHolder] = useState(card?.content?.holder || "")
@@ -86,6 +86,7 @@ export default function CardDialogForm({ onSave, loading, card }: { onSave: (car
         expire,
         pin,
         color,
+        binData: card?.content?.binData,
       })
     }
   }

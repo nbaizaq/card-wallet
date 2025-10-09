@@ -23,7 +23,14 @@ function initTheme() {
 
 function setThemeCookie(theme: "light" | "dark") {
   window.document.body.classList.toggle("dark", theme === "dark");
-  window.cookieStore.set("theme", theme);
+  window.cookieStore.set({
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).getTime(),
+    name: 'theme',
+    partitioned: false,
+    path: '/',
+    sameSite: 'strict',
+    value: theme,
+  })
 }
 
 export default function Header({ className, user }: { className?: string, user?: Models.User }) {

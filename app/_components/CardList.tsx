@@ -12,6 +12,7 @@ import CardBlock from "./CardBlock"
 import ConfirmationDialog from "./ConfirmationDialog"
 import DeleteConfirmation from "./DeleteConfirmation"
 import { LoaderIcon } from "lucide-react"
+import { getBin } from "@/lib/card"
 
 export default function CardList(
   { salt, iv }:
@@ -40,7 +41,7 @@ export default function CardList(
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  async function onSave(card: CardContent & { $id?: string, color?: string }) {
+  async function onSave(card: CardContent & { $id?: string, color?: string, binData?: Record<string, unknown> }) {
     try {
       if (!salt || !iv) {
         toast.error("Salt and IV are not set")
@@ -48,15 +49,24 @@ export default function CardList(
       }
 
       setLoading(true)
-      const { $id, ...rest } = card
-      const content = JSON.stringify({
-        ...rest
-      });
-
       if (!masterKey) {
         toast.error("Master key is not set")
         return
       }
+
+      let binResponse = card.binData ?? {};
+      if (getBin(card.number) !== card?.binData?.bin || !card.binData) {
+        try {
+          const bin = getBin(card.number)
+          binResponse = await fetch(`/api/bin?bin=${bin}`).then(res => res.json())
+        } catch { }
+      }
+      card.binData = binResponse;
+
+      const { $id, ...rest } = card
+      const content = JSON.stringify({
+        ...rest,
+      });
 
       const encryptedCard = await encrypt(masterKey, salt, iv, content)
 
@@ -136,6 +146,7 @@ export default function CardList(
       })
     }))
       .then((parsedCards) => {
+        console.log(parsedCards)
         setDecryptedCards(parsedCards as Card[])
       }).catch(() => {
         toast.error("Something went wrong while decrypting cards. Please check your master key and try again.")
