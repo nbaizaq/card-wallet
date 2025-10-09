@@ -146,7 +146,6 @@ export default function CardList(
       })
     }))
       .then((parsedCards) => {
-        console.log(parsedCards)
         setDecryptedCards(parsedCards as Card[])
       }).catch(() => {
         toast.error("Something went wrong while decrypting cards. Please check your master key and try again.")

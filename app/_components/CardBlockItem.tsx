@@ -80,7 +80,6 @@ export default function CardBlock({ card, onEdit, onDelete }: { card: CardConten
 
   const [open, setOpen] = useState<boolean>(false)
   function onInfo() {
-    console.log('onInfo',)
     setOpen(true)
   }
 

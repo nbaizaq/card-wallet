@@ -7,8 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "patch": "node version.js --patch",
-    "sw:update": "node sw-update.js"
+    "patch": "node version.js --patch"
   },
   "dependencies": {
     "@maskito/core": "^3.10.3",
